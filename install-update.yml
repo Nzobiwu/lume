@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: true # Required for root access
+  tasks:
+    - name: Update the package cache
+      yum:
+        name: "*"
+        state: latest
+        update_cache: yes
+      register: yum_update_status
