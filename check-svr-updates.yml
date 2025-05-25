@@ -1,0 +1,13 @@
+---
+- name: Check for available updates on RHEL/CentOS
+  hosts: all
+  become: true
+  tasks:
+    - name: Run yum check-update
+      shell: yum check-update
+      register: update_status
+      ignore_errors: yes  # yum check-update returns code 100 if updates are available
+
+    - name: Show available updates
+      debug:
+        var: update_status.stdout_lines
