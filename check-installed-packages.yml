@@ -1,0 +1,12 @@
+---
+- name: Search for nginx using yum
+  hosts: all
+  become: true
+  tasks:
+    - name: Search for nginx
+      shell: yum search all
+      register: search_result
+
+    - name: Show search results
+      debug:
+        var: search_result.stdout_lines
