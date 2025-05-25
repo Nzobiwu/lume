@@ -1,0 +1,42 @@
+---
+- name: Update CentOS 6 baseurl to use vault.centos.org
+  hosts: newsvrs
+  become: true
+  tasks:
+
+    - name: Ensure CentOS-Base.repo exists
+      stat:
+        path: /etc/yum.repos.d/CentOS-Base.repo
+      register: repo_file
+
+    - name: Backup the repo file
+      copy:
+        src: /etc/yum.repos.d/CentOS-Base.repo
+        dest: ~/CentOS-Base.repo.backup
+        remote_src: yes
+      when: repo_file.stat.exists
+
+    - name: Uncomment baseurl line
+      replace:
+        path: /etc/yum.repos.d/CentOS-Base.repo
+        regexp: '^#baseurl'
+        replace: 'baseurl'
+      when: repo_file.stat.exists
+
+    - name: Replace mirrorlist.centos.org with vault.centos.org
+      replace:
+        path: /etc/yum.repos.d/CentOS-Base.repo
+        regexp: 'mirrorlist.centos.org'
+        replace: 'vault.centos.org'
+      when: repo_file.stat.exists
+
+    - name: Replace mirror.centos.org with vault.centos.org
+      replace:
+        path: /etc/yum.repos.d/CentOS-Base.repo
+        regexp: 'mirror.centos.org'
+        replace: 'vault.centos.org'
+      when: repo_file.stat.exists
+
+    - name: Clean yum cache
+      command: yum clean all
+
